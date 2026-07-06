@@ -23,20 +23,20 @@ class Wilayah extends BaseController
     {
         $data = [
             'menu' => 'wilayah',
-            'page' => 'wilayah/v_index',
+            'page' => 'admin/superadmin/wilayah/v_index',
             'wilayah' => $this->ModelWilayah->AllData(),
             'web' => $this->ModelSetting->DataWeb(),
         ];
-        return view('v_template_back_end', $data);
+        return view('admin/v_template_back_end', $data);
     }
 
     public function input()
     {
         $data = [
             'menu' => 'wilayah',
-            'page' => 'wilayah/v_input',
+            'page' => 'admin/superadmin/wilayah/v_input',
         ];
-        return view('v_template_back_end', $data);
+        return view('admin/v_template_back_end', $data);
     }
 
     public function InsertData()
@@ -84,11 +84,11 @@ class Wilayah extends BaseController
     {
         $data = [
             'menu' => 'wilayah',
-            'page' => 'wilayah/v_edit',
+            'page' => 'admin/superadmin/wilayah/v_edit',
             'wilayah' => $this->ModelWilayah->DetailData($id_wilayah),
             'web' => $this->ModelSetting->DataWeb(), // Ditambahkan agar template tidak error kekurangan data web
         ];
-        return view('v_template_back_end', $data);
+        return view('admin/v_template_back_end', $data);
     }
 
     // PERBAIKAN: Menambahkan parameter $id_wilayah agar sistem tahu data mana yang sedang di-update

@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use App\Models\ProfilModel;
+use App\Models\ModelUser;
 
 class User extends BaseController
 {
     protected $profilModel;
+    protected $ModelUser;
 
     public function __construct()
     {
         $this->profilModel = new ProfilModel();
+        $this->ModelUser = new ModelUser();
     }
 
     public function index()
@@ -18,10 +21,11 @@ class User extends BaseController
         $data = [
             'menu' => 'profil',
             'profil' => $this->profilModel->first() ?? [],
-            'page' => 'profil/v_index',
+            'page' => 'admin/superadmin/profil/v_index',
+            'users' => isSuperAdmin() ? $this->ModelUser->getUsersWithSchool() : [],
         ];
 
-        return view('v_template_back_end', $data);
+        return view('admin/v_template_back_end', $data);
     }
 
     public function edit()
@@ -29,10 +33,25 @@ class User extends BaseController
         $data = [
             'menu' => 'profil',
             'profil' => $this->profilModel->first() ?? [],
-            'page' => 'profil/v_edit',
+            'page' => 'admin/superadmin/profil/v_edit',
         ];
 
-        return view('v_template_back_end', $data);
+        return view('admin/v_template_back_end', $data);
+    }
+
+    /**
+     * Menampilkan halaman setting sederhana untuk user yang sedang login (operator sekolah)
+     */
+    public function setting()
+    {
+        // Hanya untuk pengguna yang sudah login (filter auth sudah diterapkan di route)
+        $data = [
+            'menu' => 'setting',
+            'page' => 'admin/user_setting',
+            'profil' => $this->profilModel->first() ?? [],
+        ];
+
+        return view('admin/v_template_back_end', $data);
     }
 
     public function UpdateProfil()
@@ -88,5 +107,74 @@ class User extends BaseController
             $this->profilModel->insert($dataProfil);
             return redirect()->to('User')->with('success', 'Profil berhasil disimpan');
         }
+    }
+
+    public function UpdatePassword()
+    {
+        $validation = \Config\Services::validation();
+        $rules = [
+            'id_user' => 'required|is_natural_no_zero',
+            'password' => 'required|min_length[6]',
+            'pass_confirm' => 'required|matches[password]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $idUser = (int) $this->request->getPost('id_user');
+        $newPassword = $this->request->getPost('password');
+
+        // Jika super admin, boleh ubah password siapa saja
+        if (isSuperAdmin()) {
+            $this->ModelUser->update($idUser, [
+                'password' => password_hash($newPassword, PASSWORD_DEFAULT),
+            ]);
+            return redirect()->to(site_url('User'))->with('success', 'Password berhasil diperbarui.');
+        }
+
+        // Jika admin sekolah, hanya boleh ubah password akun sendiri
+        if (isAdminSekolah()) {
+            $currentId = session()->get('id_user');
+            if ($currentId !== $idUser) {
+                return redirect()->to(site_url('Admin'))->with('errors', ['access' => 'Anda hanya boleh mengubah password akun Anda sendiri.']);
+            }
+
+            $this->ModelUser->update($idUser, [
+                'password' => password_hash($newPassword, PASSWORD_DEFAULT),
+            ]);
+
+            return redirect()->to(site_url('Admin'))->with('success', 'Password berhasil diperbarui.');
+        }
+
+        // Default: tidak diizinkan
+        return redirect()->to(site_url('Admin'))->with('errors', ['access' => 'Akses ditolak.']);
+    }
+
+    public function UpdateEmail()
+    {
+        $validation = \Config\Services::validation();
+        $rules = [
+            'id_user' => 'required|is_natural_no_zero',
+            'email' => 'required|min_length[3]|max_length[255]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $idUser = (int) $this->request->getPost('id_user');
+        $email = $this->request->getPost('email');
+
+        $existing = $this->ModelUser->where('email', $email)
+            ->where('id_user !=', $idUser)
+            ->first();
+
+        if ($existing) {
+            return redirect()->back()->withInput()->with('errors', ['email' => 'Email sudah terdaftar pada akun lain.']);
+        }
+
+        $this->ModelUser->update($idUser, ['email' => $email]);
+        return redirect()->to(site_url('User'))->with('success', 'Email pengguna berhasil diperbarui.');
     }
 }

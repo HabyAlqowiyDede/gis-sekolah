@@ -33,15 +33,59 @@ $routes->get('/', 'Home::index');
 $routes->get('beranda', 'Home::beranda');
 $routes->get('datasekolah', 'Home::datasekolah');
 $routes->get('pemetaansekolah', 'Home::pemetaansekolah');
+$routes->get('datasekolah/detail/(:num)', 'Home::sekolah/$1');
+$routes->get('sekolah/(:num)', 'Home::sekolah/$1');
 $routes->get('peta', 'Home::peta');
 $routes->get('tentang', 'Home::tentang');
 $routes->get('Admin/login', 'Admin::login');
 $routes->post('Admin/cekLogin', 'Admin::cekLogin');
 $routes->get('Admin/logout', 'Admin::logout');
-$routes->post('Jenjang/InsertData', 'Jenjang::InsertData');
-$routes->post('Jenjang/UpdateData/(:num)', 'Jenjang::UpdateData/$1');
-$routes->post('Jenjang/DeleteData/(:num)', 'Jenjang::DeleteData/$1');
+$routes->group('', ['filter' => 'auth'], function($routes) {
+    // Dashboard / umum untuk admin yang terautentikasi
+    $routes->get('Admin', 'Admin::index');
+    $routes->get('Admin/logout', 'Admin::logout');
 
+    // Sekolah (akses dibatasi di controller: admin sekolah / superadmin)
+    $routes->get('Sekolah', 'Sekolah::index');
+    $routes->get('Sekolah/input', 'Sekolah::input');
+    $routes->post('Sekolah/InsertData', 'Sekolah::InsertData');
+    $routes->get('Sekolah/edit/(:num)', 'Sekolah::edit/$1');
+    $routes->post('Sekolah/saveDraft/(:num)', 'Sekolah::saveDraft/$1');
+    $routes->post('Sekolah/UpdateData/(:num)', 'Sekolah::UpdateData/$1');
+    $routes->get('Sekolah/Delete/(:num)', 'Sekolah::Delete/$1');
+    $routes->post('Sekolah/DeleteData/(:num)', 'Sekolah::DeleteData/$1');
+    $routes->get('Sekolah/galeri/(:any)', 'Sekolah::galeri/$1');
+
+    // Pengaturan akun untuk user yang sedang login (operator sekolah bisa akses)
+    $routes->get('User/setting', 'User::setting');
+    $routes->post('User/UpdatePassword', 'User::UpdatePassword');
+
+    // Rute yang hanya boleh diakses super admin
+    $routes->group('', ['filter' => 'auth:super_admin'], function($routes) {
+        // Wilayah
+        $routes->get('Wilayah', 'Wilayah::index');
+        $routes->get('Wilayah/input', 'Wilayah::input');
+        $routes->post('Wilayah/InsertData', 'Wilayah::InsertData');
+        $routes->get('Wilayah/Edit/(:num)', 'Wilayah::Edit/$1');
+        $routes->post('Wilayah/UpdateData/(:num)', 'Wilayah::UpdateData/$1');
+        $routes->post('Wilayah/Delete/(:num)', 'Wilayah::Delete/$1');
+
+        // Jenjang
+        $routes->post('Jenjang/InsertData', 'Jenjang::InsertData');
+        $routes->post('Jenjang/UpdateData/(:num)', 'Jenjang::UpdateData/$1');
+        $routes->post('Jenjang/DeleteData/(:num)', 'Jenjang::DeleteData/$1');
+
+        // User management (superadmin)
+        $routes->get('User', 'User::index');
+        $routes->get('User/edit', 'User::edit');
+        $routes->post('User/UpdateProfil', 'User::UpdateProfil');
+        $routes->post('User/UpdateEmail', 'User::UpdateEmail');
+
+        // Admin settings
+        $routes->get('Admin/Setting', 'Admin::Setting');
+        $routes->post('Admin/UpdateSetting', 'Admin::UpdateSetting');
+    });
+});
 /*
  * --------------------------------------------------------------------
  * Additional Routing

@@ -23,7 +23,7 @@ class Jenjang extends BaseController
             'jenjang' => $this->ModelJenjang->AllData(),
         ];
 
-        return view('v_template_back_end', $data);
+        return view('admin/v_template_back_end', $data);
     }
 
     public function InsertData()

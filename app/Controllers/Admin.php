@@ -2,25 +2,38 @@
 
 namespace App\Controllers;
 
+use App\Models\ModelSekolah;
 use App\Models\ModelSetting;
 use App\Models\ModelUser;
+use App\Models\ModelWilayah;
+use App\Models\ProfilModel;
 
 class Admin extends BaseController
 {
     protected $ModelSetting;
     protected $ModelUser;
+    protected $ModelSekolah;
+    protected $ModelWilayah;
+    protected $profilModel;
 
     public function __construct()
     {
         session();
         $this->ModelSetting = new ModelSetting();
         $this->ModelUser = new ModelUser();
+        $this->ModelSekolah = new ModelSekolah();
+        $this->ModelWilayah = new ModelWilayah();
+        $this->profilModel = new ProfilModel();
     }
-    
+
     public function login()
     {
         if (session()->get('is_admin_login')) {
-            return redirect()->to(site_url('Admin'));
+            $role = session()->get('role');
+            if ($role === 'super_admin') {
+                return redirect()->to(site_url('Admin'));
+            }
+            return redirect()->to(site_url('Sekolah'));
         }
 
         $data = [
@@ -47,19 +60,41 @@ class Admin extends BaseController
         }
 
         session()->regenerate();
+        session()->remove([
+            'is_admin_login',
+            'id_user',
+            'id_sekolah',
+            'nama_user',
+            'email_user',
+            'role'
+        ]);
         session()->set([
             'is_admin_login' => true,
-            'id_user' => $user['id_user'],
-            'nama_user' => $user['nama_user'],
-            'email_user' => $user['email'],
+            'id_user'        => $user['id_user'],
+            'id_sekolah'     => $user['id_sekolah'] ?? null,
+            'nama_user'      => $user['nama_user'],
+            'email_user'     => $user['email'],
+            'role'           => $user['role'],
         ]);
 
-        return redirect()->to(site_url('Admin'));
+        if (($user['role'] ?? '') === 'super_admin') {
+            return redirect()->to(site_url('Admin'));
+        }
+
+        return redirect()->to(site_url('Sekolah'));
     }
 
     public function logout()
     {
-        session()->remove(['is_admin_login', 'id_user', 'nama_user', 'email_user']);
+        session()->remove([
+            'is_admin_login',
+            'id_user',
+            'id_sekolah', // tambahkan ini
+            'nama_user',
+            'email_user',
+            'role'
+        ]);
+
         session()->setFlashdata('success', 'Anda berhasil logout.');
 
         return redirect()->to(site_url('Admin/login'));
@@ -67,25 +102,43 @@ class Admin extends BaseController
 
     public function index()
     {
+        if (isAdminSekolah()) {
+            return redirect()->to(site_url('Sekolah'));
+        }
+
+        // Jika superadmin, tampilkan dashboard superadmin dengan semua data
+        $all = $this->ModelSekolah->AllData();
+        $wilayahData = $this->ModelWilayah->AllData();
+
+        // Ambil beberapa statistik dasar dari model
         $data = [
-            'judul' => 'Dashboard',
             'menu' => 'dashboard',
-            'page' => 'v_dashboard'
+            'page' => 'admin/superadmin/dashboard',
+            'jumlah_tk' => $this->ModelSekolah->JumlahTK(),
+            'jumlah_sd' => $this->ModelSekolah->JumlahSD(),
+            'jumlah_smp' => $this->ModelSekolah->JumlahSMP(),
+            'jumlah_sekolah' => $this->ModelSekolah->JumlahSekolah(),
+            'jumlah_wilayah' => count($wilayahData),
+            'data_terbaru' => array_slice($all, 0, 5),
+            'sekolah' => $all,
+            'wilayah' => $wilayahData,
         ];
-        return view('v_template_back_end', $data);
+
+        return view('admin/v_template_back_end', $data);
     }
 
     public function Setting()
     {
-        
+
         $data = [
             'menu' => 'setting',
-            'page' => 'v_setting',
+            'page' => 'admin/superadmin/setting',
             'web' => $this->ModelSetting->DataWeb(),
+            'profil' => $this->profilModel->first() ?? [],
         ];
-        return view('v_template_back_end', $data);
+        return view('admin/v_template_back_end', $data);
     }
-    
+
     public function UpdateSetting()
     {
         $data = [
