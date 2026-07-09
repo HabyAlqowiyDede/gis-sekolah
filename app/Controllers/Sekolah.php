@@ -63,7 +63,7 @@ class Sekolah extends BaseController
         }
 
         $saved = [];
-        $allowed = ['jpg','jpeg','png','webp'];
+        $allowed = ['jpg', 'jpeg', 'png', 'webp'];
 
         // Support both single and multiple file inputs
         $fileList = [];
@@ -212,88 +212,86 @@ class Sekolah extends BaseController
     }
 
     public function InsertData()
-{
-    if ($this->validate([
-        'nama_sekolah' => [
-            'label' => 'Nama Sekolah',
-            'rules' => 'required'
-        ],
-        'npsn' => [
-            'label' => 'NPSN',
-            'rules' => 'required|is_unique[tbl_sekolah.npsn]'
-        ],
-        'id_jenjang' => [
-            'label' => 'Jenjang',
-            'rules' => 'required'
-        ],
-        'id_kecamatan' => [
-            'label' => 'Kecamatan',
-            'rules' => 'required'
-        ],
-    ])) {
+    {
+        if ($this->validate([
+            'nama_sekolah' => [
+                'label' => 'Nama Sekolah',
+                'rules' => 'required'
+            ],
+            'npsn' => [
+                'label' => 'NPSN',
+                'rules' => 'required|is_unique[tbl_sekolah.npsn]'
+            ],
+            'id_jenjang' => [
+                'label' => 'Jenjang',
+                'rules' => 'required'
+            ],
+            'id_kecamatan' => [
+                'label' => 'Kecamatan',
+                'rules' => 'required'
+            ],
+        ])) {
 
-        // Cek apakah email (NPSN) sudah dipakai
-        $user = $this->ModelUser
-            ->where('email', $this->request->getPost('npsn'))
-            ->first();
+            // Cek apakah email (NPSN) sudah dipakai
+            $user = $this->ModelUser
+                ->where('email', $this->request->getPost('npsn'))
+                ->first();
 
-        if ($user) {
-            session()->setFlashdata('errors', [
-                'npsn' => 'NPSN sudah digunakan sebagai akun operator.'
-            ]);
+            if ($user) {
+                session()->setFlashdata('errors', [
+                    'npsn' => 'NPSN sudah digunakan sebagai akun operator.'
+                ]);
 
-            return redirect()->back()->withInput();
+                return redirect()->back()->withInput();
+            }
+
+            $selectedKecamatan = $this->ModelSekolah->getKecamatanDetail($this->request->getPost('id_kecamatan'));
+            $idKabupaten = $selectedKecamatan['id_kabupaten'] ?? null;
+            // Simpan sekolah
+            $dataSekolah = [
+                'nama_sekolah' => $this->request->getPost('nama_sekolah'),
+                'npsn'         => $this->request->getPost('npsn'),
+                'id_jenjang'   => $this->request->getPost('id_jenjang'),
+                'id_kabupaten' => $idKabupaten,
+                'id_kecamatan' => $this->request->getPost('id_kecamatan'),
+                'id_nagari'    => null,
+                'alamat'       => null,
+                'foto'         => null,
+                'status'       => null,
+                'akreditasi'   => null,
+                'coordinat'    => null,
+            ];
+
+            $this->ModelSekolah->InsertData($dataSekolah);
+
+            // Ambil ID sekolah
+            $idSekolah = $this->ModelSekolah->insertID();
+
+            // Data akun admin sekolah
+            // Nama akun dibuat tetap stabil, tidak ikut berubah saat nama sekolah diubah.
+            $dataUser = [
+                'id_sekolah' => $idSekolah,
+                'nama_user'  => $this->request->getPost('nama_sekolah'),
+                'email'      => $this->request->getPost('npsn'),
+                'password'   => password_hash('123456', PASSWORD_DEFAULT),
+                'role'       => 'admin',
+                'status'     => 'aktif',
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+
+            // Simpan akun admin
+            $this->ModelUser->InsertData($dataUser);
+
+            session()->setFlashdata('Insert', 'Data sekolah dan akun admin berhasil dibuat.');
+
+            return redirect()->to(site_url('Sekolah'));
+        } else {
+
+            session()->setFlashdata('errors', \Config\Services::validation()->getErrors());
+
+            return redirect()->to(site_url('Sekolah/Input'))->withInput();
         }
-
-        $selectedKecamatan = $this->ModelSekolah->getKecamatanDetail($this->request->getPost('id_kecamatan'));
-        $idKabupaten = $selectedKecamatan['id_kabupaten'] ?? null;
-
-        // Simpan sekolah
-        $dataSekolah = [
-            'nama_sekolah' => $this->request->getPost('nama_sekolah'),
-            'npsn'         => $this->request->getPost('npsn'),
-            'id_jenjang'   => $this->request->getPost('id_jenjang'),
-            'id_kabupaten' => $idKabupaten,
-            'id_kecamatan' => $this->request->getPost('id_kecamatan'),
-            'id_nagari'    => null,
-            'alamat'       => null,
-            'foto'         => null,
-            'status'       => null,
-            'akreditasi'   => null,
-            'coordinat'    => null,
-        ];
-
-        $this->ModelSekolah->InsertData($dataSekolah);
-
-        // Ambil ID sekolah
-        $idSekolah = $this->ModelSekolah->insertID();
-
-        // Data akun admin sekolah
-        // Nama akun dibuat tetap stabil, tidak ikut berubah saat nama sekolah diubah.
-        $dataUser = [
-            'id_sekolah' => $idSekolah,
-            'nama_user'  => 'Admin Sekolah ' . $idSekolah,
-            'email'      => $this->request->getPost('npsn'),
-            'password'   => password_hash('123456', PASSWORD_DEFAULT),
-            'role'       => 'admin',
-            'status'     => 'aktif',
-            'created_at' => date('Y-m-d H:i:s'),
-        ];
-
-        // Simpan akun admin
-        $this->ModelUser->InsertData($dataUser);
-
-        session()->setFlashdata('Insert', 'Data sekolah dan akun admin berhasil dibuat.');
-
-        return redirect()->to(site_url('Sekolah'));
-
-    } else {
-
-        session()->setFlashdata('errors', \Config\Services::validation()->getErrors());
-
-        return redirect()->to(site_url('Sekolah/Input'))->withInput();
     }
-}
     public function edit($id_sekolah)
     {
         // Jika user adalah admin sekolah, hanya boleh edit sekolahnya sendiri
@@ -303,7 +301,7 @@ class Sekolah extends BaseController
         }
 
         $sekolah = $this->ModelSekolah->DetailData($id_sekolah);
-        
+
         // Ambil kecamatan berdasarkan kabupaten yang tersimpan
         $kecamatan = [];
         $nagari = [];
@@ -563,7 +561,7 @@ class Sekolah extends BaseController
             echo '<option value="">--Pilih kecamatan--</option>';
             return;
         }
-        
+
         $kecamatan = $this->ModelSekolah->allKecamatan($id_kabupaten);
         echo '<option value="">--Pilih kecamatan--</option>';
         foreach ($kecamatan as $value) {
@@ -580,7 +578,7 @@ class Sekolah extends BaseController
             echo '<option value="">--Pilih Nagari--</option>';
             return;
         }
-        
+
         $nagari = $this->ModelSekolah->allNagari($id_kecamatan);
         echo '<option value="">--Pilih Nagari--</option>';
         foreach ($nagari as $value) {
@@ -614,34 +612,39 @@ class Sekolah extends BaseController
         return view('admin/v_template_back_end', $data);
     }
 
-    public function DeleteData($id_sekolah)
-    {
-        // Jika user adalah admin sekolah, hanya boleh delete sekolahnya sendiri
-        if (isAdminSekolah() && getCurrentUserSchoolId() != $id_sekolah) {
-            session()->setFlashdata('errors', ['access' => 'Anda hanya dapat menghapus data sekolah Anda sendiri.']);
-            return redirect()->to(site_url('Sekolah'));
-        }
-
-        $sekolah = $this->ModelSekolah->DetailData($id_sekolah);
-
-        if (!$sekolah) {
-            session()->setFlashdata('delete', 'Data sekolah tidak ditemukan.');
-            return redirect()->to(site_url('Sekolah'));
-        }
-
-        $this->ModelSekolah->DeleteData($id_sekolah);
-
-        if (!empty($sekolah['foto'])) {
-            $foto = FCPATH . 'foto/' . $sekolah['foto'];
-
-            if (is_file($foto)) {
-                unlink($foto);
-            }
-        }
-
-        session()->setFlashdata('delete', 'Data sekolah berhasil dihapus.');
+   public function DeleteData($id_sekolah)
+{
+    // Jika user adalah admin sekolah, hanya boleh delete sekolahnya sendiri
+    if (isAdminSekolah() && getCurrentUserSchoolId() != $id_sekolah) {
+        session()->setFlashdata('errors', ['access' => 'Anda hanya dapat menghapus data sekolah Anda sendiri.']);
         return redirect()->to(site_url('Sekolah'));
     }
+
+    $sekolah = $this->ModelSekolah->DetailData($id_sekolah);
+
+    if (!$sekolah) {
+        session()->setFlashdata('delete', 'Data sekolah tidak ditemukan.');
+        return redirect()->to(site_url('Sekolah'));
+    }
+
+    // Hapus semua user yang terkait dengan sekolah
+    $this->ModelUser->where('id_sekolah', $id_sekolah)->delete();
+
+    // Hapus data sekolah
+    $this->ModelSekolah->DeleteData($id_sekolah);
+
+    // Hapus foto sekolah
+    if (!empty($sekolah['foto'])) {
+        $foto = FCPATH . 'foto/' . $sekolah['foto'];
+
+        if (is_file($foto)) {
+            unlink($foto);
+        }
+    }
+
+    session()->setFlashdata('delete', 'Data sekolah dan akun admin berhasil dihapus.');
+    return redirect()->to(site_url('Sekolah'));
+}
 
     private function uploadFoto($foto): string
     {

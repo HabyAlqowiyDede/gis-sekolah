@@ -29,10 +29,13 @@ class Home extends BaseController
     }
 
     public function beranda()
-    {
-        $data = $this->landingData('Beranda', 'beranda');
-        return view('user/v_template_front_end', $data);
-    }
+{
+    $data = $this->landingData('Beranda', 'beranda');
+
+    $data['pageCss'] = 'beranda.css';
+
+    return view('user/v_template_front_end', $data);
+}
 
     public function peta()
     {
@@ -112,11 +115,6 @@ class Home extends BaseController
         return $this->response->setJSON($response);
     }
 
-    public function tentang()
-    {
-        $data = $this->landingData('Tentang', 'tentang');
-        return view('user/v_template_front_end', $data);
-    }
 
     private function landingData(string $judul, string $page): array
     {

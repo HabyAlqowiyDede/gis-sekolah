@@ -48,6 +48,7 @@ $is_peta = ($active_page === 'peta');
       letter-spacing: .2px;
       white-space: nowrap;
       text-decoration: none;
+      flex-shrink: 0;
     }
     .nav-links {
       display: flex;
@@ -58,6 +59,7 @@ $is_peta = ($active_page === 'peta');
       font-size: 15px;
       flex: 1;
       margin-left: 32px;
+      min-width: 0;
     }
     .nav-links a {
       display: inline-block;
@@ -68,6 +70,7 @@ $is_peta = ($active_page === 'peta');
       border-bottom: 2px solid transparent;
       transition: all .2s ease;
       font-weight: 600;
+      white-space: nowrap;
     }
     .nav-links a.active { color: #1d4ed8; border-bottom-color: #1d4ed8; background: rgba(29, 78, 216, 0.06); }
     .nav-links a:hover { color: #1d4ed8; background: rgba(29, 78, 216, 0.06); }
@@ -108,94 +111,34 @@ $is_peta = ($active_page === 'peta');
     
     /* PAGE WRAPPER */
     .page-wrapper { max-width: 100%; margin: 0 auto; padding: 40px 32px; }
-    
-    /* HERO */
-    .beranda-hero { padding: 56px 48px !important; border-radius: 20px !important; gap: 56px !important; }
-    .hero-text h1 { font-size: 44px !important; font-weight: 800 !important; line-height: 1.2 !important; margin-bottom: 16px !important; }
-    .hero-text p { font-size: 18px !important; line-height: 1.8 !important; color: #64748b !important; margin-bottom: 28px !important; }
-    .btn-primary { padding: 14px 28px !important; font-size: 16px !important; border-radius: 10px !important; }
-    .hero-image { min-height: 280px !important; border-radius: 18px !important; }
-    .hero-image p { font-size: 13px !important; }
-    .hero-image .map-icon { font-size: 72px !important; }
-    
-    /* FEATURE CARDS */
-    .feature-box { padding: 32px 28px !important; border-radius: 20px !important; gap: 24px !important; min-height: 280px !important; }
-    .feature-icon { width: 72px !important; height: 72px !important; font-size: 32px !important; border-radius: 16px !important; }
-    .feature-box h3 { font-size: 22px !important; font-weight: 700 !important; }
-    .feature-box p { font-size: 16px !important; line-height: 1.8 !important; }
-    
-    /* INTRO SECTION */
-    .beranda-intro { max-width: 1300px !important; padding: 48px 40px !important; border-radius: 28px !important; }
-    .intro-title { font-size: 40px !important; }
-    .intro-description { font-size: 18px !important; }
-    .intro-features { gap: 24px !important; }
-    
-    /* GRID SECTION */
-    .beranda-grid-section { padding: 0 32px; }
-    .grid-cards { gap: 24px !important; }
-    .grid-card { padding: 32px !important; border-radius: 20px !important; }
-    .card-content h3 { font-size: 24px !important; }
-    .card-content p { font-size: 16px !important; }
-    .card-icon-area { width: 100px !important; height: 100px !important; font-size: 48px !important; border-radius: 18px !important; }
-    
-    /* FOOTER */
-    .main-footer { padding: 32px; max-width: 1300px; margin: 0 auto; font-size: 15px; }
-    
-    /* MAP PREVIEW */
-    .map-preview-card { border-radius: 16px !important; }
-    .map-preview-header h3 { font-size: 18px !important; }
-    .map-preview-map { height: 280px !important; }
 
-    /* Responsive navbar */
+    /* Responsive navbar — tablet & HP menengah */
     @media (max-width: 900px) {
       .nav-search { display: none !important; }
       .nav-links { gap: 2px; margin-left: 16px; font-size: 14px; }
       .nav-links a { padding: 8px 10px; }
     }
-    #loader{
-    position:fixed;
-    inset:0;
-    background:#ffffff;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    z-index:99999;
-    transition:opacity .4s ease;
-}
 
-#loader.hide{
-    opacity:0;
-    visibility:hidden;
-}
-
-.spinner{
-    width:55px;
-    height:55px;
-    border:5px solid #e5e7eb;
-    border-top:5px solid #2563eb;
-    border-radius:50%;
-    animation:spin 1s linear infinite;
-}
-
-#loader p{
-    margin-top:15px;
-    color:#555;
-    font-size:15px;
-}
-
-@keyframes spin{
-    to{
-        transform:rotate(360deg);
+    /* Responsive navbar — HP sempit: brand dipendekkan, menu jadi scroll horizontal
+       satu baris (tidak wrap ke baris kedua sehingga tinggi navbar tetap stabil) */
+    @media (max-width: 480px) {
+      .nav-inner { padding: 0 16px; gap: 10px; }
+      .nav-brand { font-size: 17px; }
+      .nav-links {
+        margin-left: 0;
+        gap: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        flex: 1 1 auto;
+      }
+      .nav-links::-webkit-scrollbar { display: none; }
+      .nav-links a { padding: 7px 10px; font-size: 13px; }
+      .page-wrapper { padding: 24px 16px; }
     }
-}
   </style>
 </head>
 <body>
-  <div id="loader">
-    <div class="spinner"></div>
-    <p>Memuat peta...</p>
-</div>
 
 <!-- NAVBAR -->
 <nav class="top-nav">
@@ -204,11 +147,8 @@ $is_peta = ($active_page === 'peta');
     <ul class="nav-links">
       <li><a href="<?= base_url('beranda') ?>" class="<?= ($active_page==='beranda'||$active_page==='') ? 'active':'' ?>">Beranda</a></li>
       <li><a href="<?= base_url('datasekolah') ?>" class="<?= in_array($active_page, ['datasekolah', 'pemetaansekolah', 'sekolah']) ? 'active':'' ?>">Sekolah</a></li>
-      <li><a href="<?= base_url('peta') ?>"  id="menuPeta"    class="<?= $active_page==='peta'    ? 'active':'' ?>">Peta Sekolah</a></li>
+      <li><a href="<?= base_url('peta') ?>"    class="<?= $active_page==='peta'    ? 'active':'' ?>">Peta Sekolah</a></li>
     </ul>
-    <a href="<?= base_url('Admin/login') ?>" class="btn-login">
-      <i class="fas fa-user"></i> Login
-    </a>
   </div>
 </nav>
 
@@ -231,34 +171,16 @@ $is_peta = ($active_page === 'peta');
 <?php if (!$is_peta): ?>
 <footer class="main-footer">
   <span>© 2026 <strong>Pemetaan Sekolah</strong> — Sistem Manajemen Data Pendidikan Terpadu.</span>
-   <div class="footer-links">
+  <!--  div class="footer-links">
     <a href="#">Kebijakan Privasi</a>
     <a href="#">Syarat &amp; Ketentuan</a>
     <a href="#">Kontak Kami</a>
     <a href="#">Bantuan</a>
-  </div>
+  </!-->
 </footer>
 <?php endif; ?>
 
 <script src="<?= base_url('AdminLTE3') ?>/plugins/jquery/jquery.min.js"></script>
 <script src="<?= base_url('AdminLTE3') ?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script>
-const loader = document.getElementById("loader");
-
-window.addEventListener("load", function () {
-    loader.classList.add("hide");
-});
-
-document.getElementById("menuPeta").addEventListener("click", function(e){
-    e.preventDefault();
-
-    loader.classList.remove("hide");
-    loader.style.display = "flex";
-
-    setTimeout(() => {
-        window.location.href = this.href;
-    }, 300); // tampilkan loading 0,5 detik
-});
-</script>
 </body>
 </html>

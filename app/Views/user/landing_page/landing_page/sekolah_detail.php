@@ -70,7 +70,7 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     display:block;
 
-    opacity:.95;
+    opacity:.35;
 
 }
 
@@ -83,9 +83,9 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     transform:translateX(-10%);
 
-    filter:blur(36px) saturate(120%);
+    filter:blur(52px) saturate(85%);
 
-    opacity:.95;
+    opacity:.5;
 
 }
 

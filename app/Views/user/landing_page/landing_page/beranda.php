@@ -1,4 +1,4 @@
-  <style>
+<style>
   :root{
     --ink:#101a2e;
     --muted:#5b6784;
@@ -149,7 +149,20 @@
     gap:20px;
   }
 
-  @media(max-width:900px){.grid-cards{grid-template-columns:1fr}}
+  @media(max-width:900px){
+    .grid-cards{grid-template-columns:1fr}
+
+    /* FIX: posisi kolom/baris eksplisit di layout desktop harus di-reset,
+       kalau tidak kartu akan tumpang-tindih / terpotong saat grid jadi 1 kolom */
+    .grid-card{
+      grid-column:auto !important;
+      grid-row:auto !important;
+    }
+    .grid-card:nth-child(1){border-radius:12px 44px 44px 44px}
+    .grid-card:nth-child(2){border-radius:44px 12px 44px 44px}
+    .grid-card:nth-child(3){border-radius:44px 44px 12px 44px}
+    .grid-card:nth-child(4){border-radius:44px 12px 44px 12px}
+  }
 
   .grid-card{
     background:#fff;border:1px solid var(--line);padding:30px;
@@ -206,8 +219,41 @@
   .landing-wrapper .map-preview-card{position:relative;z-index:1}
 
   @media(max-width:768px){
-    .beranda-hero{flex-direction:column;padding:36px 28px;border-radius:32px 32px 32px 12px}
+    .beranda-hero{flex-direction:column;padding:36px 28px;border-radius:32px 32px 32px 12px;text-align:center}
+    .hero-text p{max-width:100%}
+    .hero-actions{justify-content:center}
     .logo-container{width:220px;height:220px;flex-basis:220px}
+    .beranda-intro{padding:40px 24px 34px;border-radius:12px 32px 32px 32px}
+    .feature-box{padding:28px 20px;min-height:0}
+  }
+
+  /* HP sempit: rapatkan tipografi & padding supaya tidak terlalu besar/berjarak
+     dibanding lebar layar, tanpa mengubah struktur atau proporsi desain */
+  @media(max-width:480px){
+    .beranda-hero{padding:28px 20px}
+    .hero-eyebrow{font-size:10px;padding:6px 14px 6px 10px}
+    .hero-text h1{font-size:28px}
+    .hero-text p{font-size:13.5px}
+    .btn-primary{padding:12px 22px;font-size:12.5px}
+    .logo-container{width:170px;height:170px;flex-basis:170px}
+    .hero-image-label{font-size:11px;padding:8px 14px;bottom:-12px}
+
+    .beranda-intro{padding:32px 18px 28px}
+    .intro-title{font-size:26px}
+    .intro-description{font-size:14px;line-height:1.75}
+    .intro-label{font-size:11px;padding:7px 16px}
+
+    .feature-box{padding:22px 16px}
+    .feature-icon{width:52px;height:52px;font-size:22px}
+    .feature-box h3{font-size:16px}
+    .feature-box p{font-size:13.5px}
+
+    .grid-card{padding:22px}
+    .card-content h3{font-size:18px}
+    .card-icon-area{width:52px;height:52px;font-size:24px}
+    .grid-card-large .card-icon-area{width:60px;height:60px;font-size:28px}
+
+    .map-preview-header{flex-wrap:wrap;gap:8px}
   }
   </style>
 
@@ -277,15 +323,6 @@
           <i class="fas fa-search"></i>
         </div>
       </div>
-      <!-- <div class="grid-card">
-        <div class="card-content">
-          <h3>Bandingkan Pilihan</h3>
-          <p>Pilih beberapa sekolah dan bandingkan secara langsung untuk menemukan yang paling sesuai dengan kriteria Anda.</p>
-        </div>
-        <div class="card-icon-area">
-          <i class="fas fa-balance-scale"></i>
-        </div>
-      </div> -->
       <div class="grid-card">
         <div class="card-content">
           <span class="card-label">Mulai Sekarang</span>
