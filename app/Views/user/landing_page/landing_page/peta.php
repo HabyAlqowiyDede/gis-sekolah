@@ -1146,7 +1146,7 @@ if (empty($availableKecamatan)) {
     if (markerUrl) {
       return L.icon({
         iconUrl: markerUrl,
-        iconSize: [34, 42],
+        iconSize: [24, 30],
         iconAnchor: [17, 42],
         popupAnchor: [0, -38]
       });
