@@ -96,6 +96,7 @@ class Home extends BaseController
             'id_sekolah' => $sekolah['id_sekolah'] ?? '',
             'nama_sekolah' => $sekolah['nama_sekolah'] ?? '-',
             'npsn' => $sekolah['npsn'] ?? '-',
+            'nama_kepala_sekolah' => $sekolah['nama_kepala_sekolah'] ?? $sekolah['nama_kepala'] ?? $sekolah['kepala_sekolah'] ?? '-',
             'jenjang' => $sekolah['jenjang'] ?? '-',
             'status' => $sekolah['status'] ?? '-',
             'akreditasi' => strtoupper($sekolah['akreditasi'] ?? '-'),

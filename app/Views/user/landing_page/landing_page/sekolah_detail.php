@@ -11,6 +11,7 @@ $kecamatan = esc($school['nama_kecamatan'] ?? '-');
 $nagari = esc($school['nama_nagari'] ?? '-');
 $alamat = esc($school['alamat'] ?? '-');
 $npsn = esc($school['npsn'] ?? '-');
+$namaKepalaSekolah = esc($school['nama_kepala_sekolah'] ?? $school['nama_kepala'] ?? $school['kepala_sekolah'] ?? '-');
 $jumlahGuru = esc($school['banyak_guru'] ?? $school['jumlah_guru'] ?? '-');
 $statusSekolah = esc($school['status_sekolah'] ?? $school['status'] ?? '-');
 $kontakAdmin = esc($school['kontak_admin'] ?? '-');
@@ -247,8 +248,8 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     .detail-grid {
       display: grid;
-      grid-template-columns: 1fr 1.15fr;
-      gap: 14px;
+      grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+      gap: 20px;
       margin-bottom: 24px;
       align-items: stretch;
     }
@@ -258,7 +259,8 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
       position: relative;
       border-radius: 24px;
       overflow: hidden;
-      height: 640px;
+      min-height: 620px;
+      height: 100%;
       background: #f1f5f9;
       box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
     }
@@ -389,6 +391,8 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
       box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
       display: flex;
       flex-direction: column;
+      height: 100%;
+      justify-content: flex-start;
     }
 
     .detail-badge {
@@ -477,9 +481,10 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     .detail-meta {
       display: grid;
-      grid-template-columns: repeat(2, minmax(140px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
       margin-top: auto;
+      align-content: start;
     }
 
     .meta-item {
@@ -490,6 +495,7 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
       border: 1px solid #eef2f7;
       border-radius: 16px;
       padding: 14px 16px;
+      min-height: 84px;
     }
 
     .meta-icon {
@@ -529,8 +535,9 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     .detail-bottom {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 24px;
+      align-items: start;
     }
 
     .panel {
@@ -539,6 +546,9 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
       border-radius: 24px;
       padding: 30px;
       box-shadow: 0 18px 50px rgba(15, 23, 42, 0.06);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .panel-title {
@@ -558,31 +568,40 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     .detail-location {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 14px;
+      align-items: stretch;
     }
 
-    .detail-location div {
+    .detail-location > div {
       background: #f8fafc;
       border: 1px solid #eef2f7;
       border-radius: 16px;
       padding: 18px;
       display: flex;
-      gap: 12px;
+      flex-direction: column;
       align-items: flex-start;
+      justify-content: flex-start;
+      gap: 10px;
+      text-align: left;
+      min-height: 140px;
+      height: 100%;
+      box-sizing: border-box;
     }
 
     .detail-location .loc-icon {
       flex-shrink: 0;
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
       background: #e8eefc;
       color: #2563eb;
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 13px;
-      margin-top: 2px;
+      margin-top: 0;
+      align-self: flex-start;
     }
 
     .detail-location strong {
@@ -590,7 +609,8 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
       font-size: 12px;
       color: #64748b;
       font-weight: 600;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
+      text-align: left;
     }
 
     .detail-location span {
@@ -599,6 +619,14 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
       color: #0f172a;
       font-weight: 700;
       line-height: 1.55;
+      text-align: left;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+
+    .detail-description {
+      gap: 18px;
+      justify-content: space-between;
     }
 
     .detail-description p {
@@ -609,10 +637,15 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
     }
 
     .quote-box {
-      background: #eef2ff;
-      border-radius: 16px;
-      margin-bottom: 50px;
-      padding: 55px 22px;
+      background: linear-gradient(135deg, #f8fbff 0%, #eef2ff 100%);
+      border-radius: 18px;
+      margin-bottom: 0;
+      padding: 24px 22px;
+      border: 1px solid #e2e8f0;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
     }
 
     .quote-box p {
@@ -753,6 +786,13 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
           <div>
             <strong>NPSN</strong>
             <span><?= $npsn ?></span>
+          </div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-icon"><i class="fas fa-user-tie"></i></div>
+          <div>
+            <strong>Nama Kepala Sekolah</strong>
+            <span><?= $namaKepalaSekolah ?></span>
           </div>
         </div>
         <div class="meta-item">
