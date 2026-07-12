@@ -25,7 +25,7 @@
     .login-wrapper {
       width: min(420px, 100%);
       background: #ffffff;
-      border-radius: 28px;
+      border-radius: 12px;
       border: 1px solid #e2e8f0;
       box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
       overflow: hidden;
@@ -137,7 +137,7 @@
     .btn-submit {
       width: 100%;
       padding: 14px 16px;
-      border-radius: 14px;
+      border-radius: 10px;
       border: none;
       background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
       color: #ffffff;
@@ -241,17 +241,11 @@
             </button>
           </div>
         </div>
-
-        <label class="remember">
-          <input type="checkbox" id="remember" name="remember" />
-          <span>Biarkan saya tetap masuk</span>
-        </label>
-
         <button type="submit" class="btn-submit">Login</button>
       </form>
 
       <p class="footer-note">
-        <a href="<?= site_url('/') ?>">Kembali ke Beranda</a> · Butuh bantuan? <a href="#">Hubungi IT Support</a>
+        <a href="<?= site_url('/') ?>">Kembali ke Beranda</a> · Butuh bantuan? <a href="">Hubungi</a>
       </p>
     </div>
   </div>

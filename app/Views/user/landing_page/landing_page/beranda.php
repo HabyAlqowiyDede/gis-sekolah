@@ -339,8 +339,7 @@
     <div class="map-preview-header">
       <h3>Layer Visualisasi Map</h3>
       <div class="map-preview-badges">
-        <span class="badge badge-green"><i class="fas fa-circle" style="font-size:8px;margin-right:4px"></i>Zonasi Aktif</span>
-        <span class="badge badge-blue">Aksesibilitas</span>
+        
       </div>
     </div>
     <div class="map-preview-map">
