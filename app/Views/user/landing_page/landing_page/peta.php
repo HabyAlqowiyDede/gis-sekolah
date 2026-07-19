@@ -91,28 +91,12 @@ foreach ($sekolah as $item) {
 
 ksort($kecamatanList);
 
-$allowedKecamatan = [
-  'Padang Ganting' => ['padang ganting', 'padang gantiang', 'kecamatan padang ganting', 'kecamatan padang gantiang'],
-  'Tanjung Ameh' => ['tanjung ameh', 'tanjuang ameh', 'kecamatan tanjung ameh', 'kecamatan tanjuang ameh'],
-  'Lintau Buo' => ['lintau buo', 'lintau buo', 'kecamatan lintau buo', 'kecamatan lintau buo'],
-];
 $availableKecamatan = [];
 foreach ($wilayah as $item) {
-  $namaWilayah = strtolower(trim($item['nama_wilayah'] ?? ''));
-  foreach ($allowedKecamatan as $label => $aliases) {
-    foreach ($aliases as $alias) {
-      if ($alias !== '' && str_contains($namaWilayah, $alias)) {
-        $availableKecamatan[] = $label;
-        break 2;
-      }
-    }
-  }
+  $availableKecamatan[] = strtolower(trim($item['nama_wilayah'] ?? ''));
 }
 $availableKecamatan = array_values(array_unique($availableKecamatan));
 
-if (empty($availableKecamatan)) {
-  $availableKecamatan = array_keys($allowedKecamatan);
-}
 
 ?>
 
@@ -1189,21 +1173,32 @@ if (empty($availableKecamatan)) {
       '</div>';
   }
 
-  var kecamatanAliasMap = {
-    'Padang Ganting': ['padang ganting', 'padang gantiang', 'kecamatan padang ganting', 'kecamatan padang gantiang'],
-    'Tanjung Ameh': ['tanjung ameh', 'tanjuang ameh', 'kecamatan tanjung ameh', 'kecamatan tanjuang ameh'],
-    'Lintau Buo Utara': ['lintau buo utara', 'lintau buo', 'kecamatan lintau buo utara', 'kecamatan lintau buo'],
-  };
+  // Normalisasi nama kecamatan supaya dua sumber data yang berbeda format
+  // (nama_wilayah pada tabel wilayah vs nama_kecamatan pada tabel sekolah)
+  // tetap bisa dicocokkan: buang kata "kecamatan/kec", rapikan spasi, dan
+  // satukan varian ejaan yang umum dipakai di data lokal.
+  function normalizeKecamatan(value) {
+    var v = (value || '').toLowerCase();
+    v = v.replace(/\bkecamatan\b\.?/g, ' ');
+    v = v.replace(/\bkec\.?\b/g, ' ');
+    v = v.replace(/tanjuang/g, 'tanjung');
+    v = v.replace(/gantiang/g, 'ganting');
+    v = v.replace(/\bameh\b/g, 'emas');
+    v = v.replace(/buo utara/g, 'buo');
+    v = v.replace(/\s+/g, ' ').trim();
+    return v;
+  }
 
   function kecamatanMatches(value, selectedKecamatan) {
     if (!selectedKecamatan) {
       return true;
     }
-    var normalizedValue = (value || '').toLowerCase();
-    var aliases = kecamatanAliasMap[selectedKecamatan] || [selectedKecamatan.toLowerCase()];
-    return aliases.some(function(alias) {
-      return alias && normalizedValue.includes(alias);
-    });
+    var a = normalizeKecamatan(value);
+    var b = normalizeKecamatan(selectedKecamatan);
+    if (!a || !b) {
+      return false;
+    }
+    return a === b || a.includes(b) || b.includes(a);
   }
 
   // Perbarui panel statistik ringkas berdasarkan hasil yang sedang tampil
@@ -1351,7 +1346,10 @@ if (empty($availableKecamatan)) {
   document.getElementById('filterKecamatan').addEventListener('change', renderSekolahMarkers);
 
   var wilayahData = [];
-  var wilayahLayers = {};
+  // NOTE: menggunakan layerGroup permanen (bukan object/array manual) supaya
+  // clearLayers() menjamin SEMUA polygon lama benar-benar hilang saat filter
+  // kecamatan diganti — sebelumnya polygon lama bisa nyangkut/menumpuk.
+  var wilayahLayer = L.layerGroup().addTo(map);
 
   function getSelectedKecamatan() {
     return document.getElementById('filterKecamatan').value;
@@ -1384,35 +1382,31 @@ if (empty($availableKecamatan)) {
   }
 
   function renderWilayahLayers(selectedKecamatan) {
-    Object.values(wilayahLayers).forEach(function(layer) {
-        if (map.hasLayer(layer)) {
-            map.removeLayer(layer);
-        }
-    });
-
-    wilayahLayers = [];
+    // Bersihkan SEMUA polygon wilayah sebelumnya dalam satu langkah.
+    // Tidak lagi mengandalkan object/array index manual, jadi tidak ada
+    // celah bagi polygon lama untuk tertinggal/menumpuk di peta.
+    wilayahLayer.clearLayers();
 
     var group = L.featureGroup();
-
     var showAll = !selectedKecamatan;
 
-    wilayahData.forEach(function(item, index) {
-        var cocokWilayah = showAll || kecamatanMatches(item.nama, selectedKecamatan);
+    wilayahData.forEach(function(item) {
+      var cocokWilayah = showAll || kecamatanMatches(item.nama, selectedKecamatan);
 
-        if (cocokWilayah) {
-            wilayahLayers[index] = buildWilayahLayer(item).addTo(map);
-            group.addLayer(wilayahLayers[index]);
-        }
+      if (cocokWilayah) {
+        var layer = buildWilayahLayer(item);
+        wilayahLayer.addLayer(layer);
+        group.addLayer(layer);
+      }
     });
 
-    // Fokus ke tengah semua wilayah
+    // Fokus ke tengah semua wilayah yang cocok
     if (group.getLayers().length > 0) {
-      console.log(group.getBounds());
-        map.fitBounds(group.getBounds(), {
-            padding: [40, 40]
-        });
+      map.fitBounds(group.getBounds(), {
+        padding: [40, 40]
+      });
     }
-}
+  }
 
   <?php foreach ($wilayah as $key => $value) {
     $raw_geojson = $value['geojson'];

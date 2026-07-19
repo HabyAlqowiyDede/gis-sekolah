@@ -245,9 +245,43 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
       color: #2563eb;
     }
 
+    /* ===== Grid column utility classes =====
+       Pindahkan grid-template-columns ke sini supaya jumlah kolom
+       tinggal diganti lewat class di HTML, tanpa ubah CSS. */
+    .grid-2-equal {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .grid-2-wide {
+      grid-template-columns: 1fr 1.15fr;
+    }
+
+    .grid-2-min140 {
+      grid-template-columns: repeat(2, minmax(140px, 1fr));
+    }
+
+    /* Sistem grid 12 kolom (bootstrap-style).
+       Pasang class "grid-12" di parent, lalu "col-1" s/d "col-12"
+       di tiap child untuk atur lebarnya (dari total 12 kolom). */
+    .grid-12 {
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .col-1  { grid-column: span 1; }
+    .col-2  { grid-column: span 2; }
+    .col-3  { grid-column: span 3; }
+    .col-4  { grid-column: span 4; }
+    .col-5  { grid-column: span 5; }
+    .col-6  { grid-column: span 6; }
+    .col-7  { grid-column: span 7; }
+    .col-8  { grid-column: span 8; }
+    .col-9  { grid-column: span 9; }
+    .col-10 { grid-column: span 10; }
+    .col-11 { grid-column: span 11; }
+    .col-12 { grid-column: span 12; }
+
     .detail-grid {
       display: grid;
-      grid-template-columns: 1fr 1.15fr;
       gap: 14px;
       margin-bottom: 24px;
       align-items: stretch;
@@ -477,7 +511,6 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     .detail-meta {
       display: grid;
-      grid-template-columns: repeat(2, minmax(140px, 1fr));
       gap: 14px;
       margin-top: auto;
     }
@@ -529,7 +562,6 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     .detail-bottom {
       display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
 
@@ -558,7 +590,6 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     .detail-location {
       display: grid;
-      grid-template-columns: 1fr 1fr;
       gap: 14px;
     }
 
@@ -631,14 +662,15 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
     @media (max-width: 960px) {
 
-      .detail-grid,
-      .detail-bottom {
+      .grid-2-equal,
+      .grid-2-wide,
+      .grid-2-min140,
+      .grid-12 {
         grid-template-columns: 1fr;
       }
 
-      .detail-meta,
-      .detail-location {
-        grid-template-columns: 1fr;
+      .grid-12 > [class*="col-"] {
+        grid-column: span 1;
       }
 
       .btn-back {
@@ -680,7 +712,7 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
     <a href="<?= base_url('datasekolah') ?>" class="btn-back"><i class="fas fa-arrow-left"></i> Kembali ke Daftar Sekolah</a>
     <h1>Detail Sekolah</h1>
   </div>
-  <div class="detail-grid">
+  <div class="detail-grid grid-2-wide">
     <div class="detail-card-image-wrap">
       <div class="image-tabs">
         <button type="button" class="active" data-tab="foto"><i class="fas fa-image"></i> Foto Sekolah</button>
@@ -747,7 +779,7 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
 
       <p class="description">Sekolah ini berkomitmen untuk memberikan pendidikan berkualitas dan membentuk generasi yang berkarakter, berprestasi, serta berakhlak mulia. Informasi berikut merupakan data lengkap sekolah yang dapat digunakan sebagai referensi.</p>
 
-      <div class="detail-meta">
+      <div class="detail-meta grid-2-min140">
         <div class="meta-item">
           <div class="meta-icon"><i class="fas fa-id-card"></i></div>
           <div>
@@ -802,10 +834,10 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
     </div>
   </div>
 
-  <div class="detail-bottom">
-    <div class="panel">
+  <div class="detail-bottom grid-12">
+    <div class="panel col-12">
       <div class="panel-title"><i class="fas fa-location-dot"></i> Informasi Lokasi</div>
-      <div class="detail-location">
+      <div class="detail-location grid-2-equal">
         <div>
           <div class="loc-icon"><i class="fas fa-city"></i></div>
           <div>
@@ -837,7 +869,7 @@ $markerUrl = $markerFile !== '' ? base_url('marker/' . $markerFile) : '';
       </div>
     </div>
 
-    <div class="panel detail-description">
+    <div class="panel detail-description col-12">
       <div class="quote-box">
         <div class="panel-title"><i class="fas fa-book-open"></i>Visi Sekolah</div>      
         <p><i class="fas fa-quote-left"></i><?= $visi ?>”</p>

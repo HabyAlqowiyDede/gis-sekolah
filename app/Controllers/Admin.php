@@ -76,7 +76,7 @@ class Admin extends BaseController
             'email_user'     => $user['email'],
             'role'           => $user['role'],
         ]);
-
+      session()->remove('school_form_draft');
         if (($user['role'] ?? '') === 'super_admin') {
             return redirect()->to(site_url('Admin'));
         }
@@ -86,16 +86,7 @@ class Admin extends BaseController
 
     public function logout()
     {
-        session()->remove([
-            'is_admin_login',
-            'id_user',
-            'id_sekolah', // tambahkan ini
-            'nama_user',
-            'email_user',
-            'role'
-        ]);
-
-        session()->setFlashdata('success', 'Anda berhasil logout.');
+        session()->destroy();
 
         return redirect()->to(site_url('Admin/login'));
     }

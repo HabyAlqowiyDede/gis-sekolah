@@ -132,7 +132,7 @@ $profil = $profil ?? [];
         </div>
     <?php endif; ?>
 
-    <div class="card setting-card">
+    <!-- <div class="card setting-card">
         <div class="card-header">
             <h3 class="setting-title">
                 <span class="title-icon"><i class="fas fa-building"></i></span>
@@ -186,7 +186,7 @@ $profil = $profil ?? [];
             </div>
             <?= form_close() ?>
         </div>
-    </div>
+    </div> -->
 
     <div class="card setting-card">
         <div class="card-header">
@@ -204,7 +204,7 @@ $profil = $profil ?? [];
                         <label>Password Baru</label>
                         <div class="input-group">
                             <input type="password" name="password" id="newPassword" class="form-control" placeholder="Minimal 6 karakter" required minlength="6">
-                            <div class="input-group-append"><button type="button" class="toggle-pass" data-target="#newPassword"><i class="fas fa-eye"></i></button></div>
+                            <div class="input-group-append"><button type="button" class="toggle-pass" data-target="#newPassword"></button></div>
                         </div>
                     </div>
                 </div>
@@ -213,7 +213,7 @@ $profil = $profil ?? [];
                         <label>Konfirmasi Password</label>
                         <div class="input-group">
                             <input type="password" name="pass_confirm" id="confirmPassword" class="form-control" placeholder="Ketik ulang password" required>
-                            <div class="input-group-append"><button type="button" class="toggle-pass" data-target="#confirmPassword"><i class="fas fa-eye"></i></button></div>
+                            <div class="input-group-append"><button type="button" class="toggle-pass" data-target="#confirmPassword"></button></div>
                         </div>
                     </div>
                 </div>

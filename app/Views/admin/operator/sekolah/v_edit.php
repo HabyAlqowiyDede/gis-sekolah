@@ -391,7 +391,7 @@ if (! preg_match('/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/', $mapCoordinate)) {
 
 <script>
     $(document).ready(function() {
-        const draftKey = 'schoolFormDraft';
+        const draftKey = 'schoolFormDraft_<?= $sekolah['id_sekolah'] ?>';
         const form = $('#schoolForm');
 
         function saveDraft() {
@@ -462,23 +462,23 @@ if (! preg_match('/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/', $mapCoordinate)) {
         }
 
         $('.select2').select2({ width: '100%' });
-        setTimeout(restoreDraft, 100);
+        // setTimeout(restoreDraft, 100);
 
-        form.find('input, select, textarea').not('[type="file"]').on('input keyup paste change focusout', function() {
-            saveDraft();
-        });
+        // form.find('input, select, textarea').not('[type="file"]').on('input keyup paste change focusout', function() {
+        //     saveDraft();
+        // });
 
-        $('.select2').on('select2:select select2:clear', function() {
-            saveDraft();
-        });
+        // $('.select2').on('select2:select select2:clear', function() {
+        //     saveDraft();
+        // });
 
-        form.on('submit', function() {
-            clearDraft();
-        });
+        // form.on('submit', function() {
+        //     clearDraft();
+        // });
 
-        $(window).on('beforeunload pageshow', function() {
-            saveDraft();
-        });
+        // $(window).on('beforeunload pageshow', function() {
+        //     saveDraft();
+        // });
 
         // Preview foto ketika user memilih file
         $('#fotoInput').change(function(e) {

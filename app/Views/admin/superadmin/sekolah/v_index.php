@@ -3,7 +3,7 @@ $judul = $judul ?? 'Sekolah';
 $sekolah = $sekolah ?? [];
 $totalSekolah = count($sekolah);
 $totalNegeri = count(array_filter($sekolah, static fn ($item) => strtolower($item['status'] ?? '') === 'negeri'));
-$totalAkreditasiA = count(array_filter($sekolah, static fn ($item) => strtoupper($item['akreditasi'] ?? '') === 'A'));
+$totalAkreditasiA = count(array_filter($sekolah, static fn ($item) => strtoupper($item['akreditasi'] ?? '') === 'A')); 
 ?>
 
 <style>

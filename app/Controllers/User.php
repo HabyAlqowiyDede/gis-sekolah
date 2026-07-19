@@ -54,60 +54,60 @@ class User extends BaseController
         return view('admin/v_template_back_end', $data);
     }
 
-    public function UpdateProfil()
-    {
-        $validation = \Config\Services::validation();
+    // public function UpdateProfil()
+    // {
+    //     $validation = \Config\Services::validation();
 
-        $rules = [
-            'nama_dinas' => 'required|min_length[5]',
-            'logo' => 'if_exist|is_image[logo]|max_size[logo,2048]',
-        ];
+    //     $rules = [
+    //         'nama_dinas' => 'required|min_length[5]',
+    //         'logo' => 'if_exist|is_image[logo]|max_size[logo,2048]',
+    //     ];
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
+    //     if (!$this->validate($rules)) {
+    //         return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+    //     }
 
-        $id = 1;
-        $dataProfil = [
-            'nama_dinas' => $this->request->getPost('nama_dinas'),
-            'kepala_dinas' => $this->request->getPost('kepala_dinas'),
-            'nip_kepala' => $this->request->getPost('nip_kepala'),
-            'alamat' => $this->request->getPost('alamat'),
-            'telepon' => $this->request->getPost('telepon'),
-            'email' => $this->request->getPost('email'),
-            'website' => $this->request->getPost('website'),
-        ];
+    //     $id = 1;
+    //     $dataProfil = [
+    //         'nama_dinas' => $this->request->getPost('nama_dinas'),
+    //         'kepala_dinas' => $this->request->getPost('kepala_dinas'),
+    //         'nip_kepala' => $this->request->getPost('nip_kepala'),
+    //         'alamat' => $this->request->getPost('alamat'),
+    //         'telepon' => $this->request->getPost('telepon'),
+    //         'email' => $this->request->getPost('email'),
+    //         'website' => $this->request->getPost('website'),
+    //     ];
 
-        // Handle logo upload
-        $logo = $this->request->getFile('logo');
-        if ($logo && $logo->isValid() && !$logo->hasMoved()) {
-            $oldProfil = $this->profilModel->find($id);
+    //     // Handle logo upload
+    //     $logo = $this->request->getFile('logo');
+    //     if ($logo && $logo->isValid() && !$logo->hasMoved()) {
+    //         $oldProfil = $this->profilModel->find($id);
 
-            // Delete old logo
-            if ($oldProfil && !empty($oldProfil['logo'])) {
-                $oldLogoPath = FCPATH . 'profil' . DIRECTORY_SEPARATOR . $oldProfil['logo'];
-                if (file_exists($oldLogoPath)) {
-                    unlink($oldLogoPath);
-                }
-            }
+    //         // Delete old logo
+    //         if ($oldProfil && !empty($oldProfil['logo'])) {
+    //             $oldLogoPath = FCPATH . 'profil' . DIRECTORY_SEPARATOR . $oldProfil['logo'];
+    //             if (file_exists($oldLogoPath)) {
+    //                 unlink($oldLogoPath);
+    //             }
+    //         }
 
-            // Upload new logo
-            $newName = $logo->getRandomName();
-            $logo->move(FCPATH . 'profil', $newName);
-            $dataProfil['logo'] = $newName;
-        }
+    //         // Upload new logo
+    //         $newName = $logo->getRandomName();
+    //         $logo->move(FCPATH . 'profil', $newName);
+    //         $dataProfil['logo'] = $newName;
+    //     }
 
-        $existingProfil = $this->profilModel->find($id);
+    //     $existingProfil = $this->profilModel->find($id);
 
-        if ($existingProfil) {
-            $this->profilModel->update($id, $dataProfil);
-            return redirect()->to('setting')->with('success', 'Profil berhasil diperbarui');
-        } else {
-            $dataProfil['id_profil'] = $id;
-            $this->profilModel->insert($dataProfil);
-            return redirect()->to('setting')->with('success', 'Profil berhasil disimpan');
-        }
-    }
+    //     if ($existingProfil) {
+    //         $this->profilModel->update($id, $dataProfil);
+    //         return redirect()->to('setting')->with('success', 'Profil berhasil diperbarui');
+    //     } else {
+    //         $dataProfil['id_profil'] = $id;
+    //         $this->profilModel->insert($dataProfil);
+    //         return redirect()->to('setting')->with('success', 'Profil berhasil disimpan');
+    //     }
+    // }
 
     public function UpdatePassword()
     {
@@ -152,7 +152,6 @@ class User extends BaseController
             return redirect()->back()
                 ->with('pesan', 'Password berhasil diperbarui.');
         }
-
         return redirect()->back()
             ->with('errors', [
                 'access' => 'Akses ditolak.'
