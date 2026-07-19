@@ -1,7 +1,6 @@
 <?php
 $sekolah = $sekolah ?? [];
 $usingSampleData = empty($sekolah);
-
 if ($usingSampleData) {
     $sekolah = [
         [

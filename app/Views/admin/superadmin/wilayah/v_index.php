@@ -270,7 +270,7 @@ $totalWilayah = count($wilayah);
                 </thead>
                 <tbody>
                     <?php $no = 1; ?>
-                    <?php foreach ($wilayah as $value): ?>
+                    <?php foreach ($wilayah as $value): ?>  
                         <tr>
                             <td class="text-center align-middle"><?= $no++ ?></td>
                             <td class="align-middle"><?= esc($value['nama_wilayah']) ?></td>

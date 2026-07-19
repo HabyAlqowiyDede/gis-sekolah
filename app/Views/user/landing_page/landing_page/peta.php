@@ -1407,6 +1407,7 @@ if (empty($availableKecamatan)) {
 
     // Fokus ke tengah semua wilayah
     if (group.getLayers().length > 0) {
+      console.log(group.getBounds());
         map.fitBounds(group.getBounds(), {
             padding: [40, 40]
         });

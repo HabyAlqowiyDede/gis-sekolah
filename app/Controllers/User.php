@@ -101,56 +101,63 @@ class User extends BaseController
 
         if ($existingProfil) {
             $this->profilModel->update($id, $dataProfil);
-            return redirect()->to('User')->with('success', 'Profil berhasil diperbarui');
+            return redirect()->to('setting')->with('success', 'Profil berhasil diperbarui');
         } else {
             $dataProfil['id_profil'] = $id;
             $this->profilModel->insert($dataProfil);
-            return redirect()->to('User')->with('success', 'Profil berhasil disimpan');
+            return redirect()->to('setting')->with('success', 'Profil berhasil disimpan');
         }
     }
 
     public function UpdatePassword()
     {
-        $validation = \Config\Services::validation();
         $rules = [
-            'id_user' => 'required|is_natural_no_zero',
-            'password' => 'required|min_length[6]',
+            'id_user'      => 'required|is_natural_no_zero',
+            'password'     => 'required|min_length[6]',
             'pass_confirm' => 'required|matches[password]',
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
 
-        $idUser = (int) $this->request->getPost('id_user');
+        $idUser      = (int) $this->request->getPost('id_user');
         $newPassword = $this->request->getPost('password');
 
-        // Jika super admin, boleh ubah password siapa saja
         if (isSuperAdmin()) {
+
             $this->ModelUser->update($idUser, [
                 'password' => password_hash($newPassword, PASSWORD_DEFAULT),
             ]);
-            return redirect()->to(site_url('User'))->with('success', 'Password berhasil diperbarui.');
+
+            return redirect()->back()
+                ->with('pesan', 'Password berhasil diperbarui.');
         }
 
-        // Jika admin sekolah, hanya boleh ubah password akun sendiri
         if (isAdminSekolah()) {
-            $currentId = session()->get('id_user');
-            if ($currentId !== $idUser) {
-                return redirect()->to(site_url('Admin'))->with('errors', ['access' => 'Anda hanya boleh mengubah password akun Anda sendiri.']);
+
+            if (session()->get('id_user') != $idUser) {
+                return redirect()->back()
+                    ->with('errors', [
+                        'access' => 'Anda hanya boleh mengubah password akun sendiri.'
+                    ]);
             }
 
             $this->ModelUser->update($idUser, [
                 'password' => password_hash($newPassword, PASSWORD_DEFAULT),
             ]);
 
-            return redirect()->to(site_url('Admin'))->with('success', 'Password berhasil diperbarui.');
+            return redirect()->back()
+                ->with('pesan', 'Password berhasil diperbarui.');
         }
 
-        // Default: tidak diizinkan
-        return redirect()->to(site_url('Admin'))->with('errors', ['access' => 'Akses ditolak.']);
+        return redirect()->back()
+            ->with('errors', [
+                'access' => 'Akses ditolak.'
+            ]);
     }
-
     public function UpdateEmail()
     {
         $validation = \Config\Services::validation();

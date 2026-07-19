@@ -60,10 +60,23 @@ $menu = $menu ?? '';
       pointer-events: auto !important;
       transform: none !important;
     }
-    .main-sidebar .nav-link { position: relative; z-index: 100000 !important; pointer-events: auto !important; }
-    .main-sidebar * { pointer-events: auto !important; }
+
+    .main-sidebar .nav-link {
+      position: relative;
+      z-index: 100000 !important;
+      pointer-events: auto !important;
+    }
+
+    .main-sidebar * {
+      pointer-events: auto !important;
+    }
+
     /* Pastikan konten/peta berada di bawah */
-    .content-wrapper, #map, .leaflet-container { z-index: 0 !important; }
+    .content-wrapper,
+    #map,
+    .leaflet-container {
+      z-index: 0 !important;
+    }
   </style>
 
 </head>
@@ -87,20 +100,19 @@ $menu = $menu ?? '';
       <!-- Sidebar -->
       <div class="sidebar">
         <!-- Sidebar user panel (optional) -->
-        <
 
         <!-- Sidebar Menu -->
         <nav class="mt-2">
           <?php
-            // Muat partial sidebar sesuai role untuk menjaga template lebih rapi
-            if (function_exists('isAdminSekolah') && isAdminSekolah()) {
-                echo view('admin/sidebar_operator', ['menu' => $menu]);
-            } elseif (function_exists('isSuperAdmin') && isSuperAdmin()) {
-                echo view('admin/sidebar_superadmin', ['menu' => $menu]);
-            } else {
-                // Default fallback
-                echo view('admin/sidebar_operator', ['menu' => $menu]);
-            }
+          // Muat partial sidebar sesuai role untuk menjaga template lebih rapi
+          if (function_exists('isAdminSekolah') && isAdminSekolah()) {
+            echo view('admin/sidebar_operator', ['menu' => $menu]);
+          } elseif (function_exists('isSuperAdmin') && isSuperAdmin()) {
+            echo view('admin/sidebar_superadmin', ['menu' => $menu]);
+          } else {
+            // Default fallback
+            echo view('admin/sidebar_operator', ['menu' => $menu]);
+          }
           ?>
         </nav>
 

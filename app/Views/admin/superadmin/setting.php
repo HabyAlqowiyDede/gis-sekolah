@@ -1,6 +1,7 @@
 <?php
 $judul = $judul ?? 'Setting';
 $profil = $profil ?? [];
+
 ?>
 
 <style>
